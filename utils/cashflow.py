@@ -3,11 +3,11 @@
 def analyze_cashflow(user_data):
         monthly_income = user_data['income']
         savings = user_data['savings']
-        monthly_expenses = user_data['monthly_expenses']
+        monthly_expenses = user_data['outcome']
         debt = user_data['debt']
         
         # Calculate key financial ratios
-        savings_ratio = (monthly_income - monthly_expenses) / monthly_income
+        savings_ratio = (monthly_income - monthly_expenses) / monthly_income 
         debt_to_income = debt / (monthly_income * 12)
         emergency_fund_months = savings / monthly_expenses
         

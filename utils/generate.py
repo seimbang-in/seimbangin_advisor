@@ -6,7 +6,7 @@ def get_recommendations(user_data, market_conditions):
     analysis = analyze_cashflow(user_data)
     recommendations = []
         
-    # Emergency fund recommendations
+
     if analysis['emergency_fund_months'] < 6:
         recommendations.append({
             'category': 'Emergency Fund',
@@ -14,7 +14,7 @@ def get_recommendations(user_data, market_conditions):
             'priority': 'High'
         })
     
-    # Debt management
+
     if analysis['debt_to_income'] > 0.4:
         recommendations.append({
             'category': 'Debt',
@@ -22,7 +22,7 @@ def get_recommendations(user_data, market_conditions):
             'priority': 'High'
         })
     
-    # Savings optimization
+ 
     if analysis['savings_ratio'] < 0.2:
         recommendations.append({
             'category': 'Savings',
@@ -42,7 +42,7 @@ def get_recommendations(user_data, market_conditions):
     # }
     # recommendations.append(investment_rec)
     
-    # Market-based adjustments
+
     for indicator, condition in market_conditions.items():
         if condition == 'Bullish':
             recommendations.append({
@@ -57,7 +57,7 @@ def get_recommendations(user_data, market_conditions):
                 'priority': 'Medium'
             })
     
-    # Goal-specific recommendations
+
     for goal in user_data['financial_goals']:
         if goal.lower().startswith('retirement'):
             recommendations.append({

@@ -6,6 +6,7 @@ import uvicorn
 from utils.generate import get_financial_advice
 from utils.model import load_model_forecasting
 from utils.market import predict_market,define_market_condition
+from models.User import User
 
 app = FastAPI(
     title="Seimbangin financial advisor API",
@@ -23,16 +24,29 @@ app.add_middleware(
 
 dataset = pd.read_csv('./combined_dataset.csv')
 
-@app.get("/get_advice")
-async def get_advice():
-    context = "I am a 30-year-old professional looking to invest in the stock market. I have a moderate risk tolerance and a long-term investment horizon. What are some investment strategies that I should consider?"
+@app.post("/get_advice")
+async def get_advice(request: User):
+    models = load_model_forecasting()
+    predictions = predict_market(models,dataset,12)
+    conditions = define_market_condition(predictions,dataset)
+    context = f"""
+    Income: Rp.{request.monthly_income}
+    Outcome: Rp.{request.outcome}
+    debt: Rp.{request.debt}
+    current savings: Rp.{request.current_savings}
+    rsik management: {request.risk_management}
+    Financial Goals: {request.financial_goals}
+    Market Conditions: {conditions}
+    
+    Based on financial situation above, give me a personalized financial advice.
+    """
     response = get_financial_advice(context)
     return response
 
-@app.get("/get_market_conditions")
-async def get_market_conditions():
+@app.post("/get_market_conditions")
+async def get_market_conditions(month: int):
     models = load_model_forecasting()
-    predictions = predict_market(models,dataset,12)
+    predictions = predict_market(models,dataset,month)
     conditions = define_market_condition(predictions,dataset)
     return conditions
 

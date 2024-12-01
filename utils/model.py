@@ -12,14 +12,14 @@ def load_model_forecasting():
 def load_model_advisor():
     model = AutoModelForCausalLM.from_pretrained(
         "./Llama-3.2-1B-personal-finance",
-        torch_dtype=torch.float16,  # Gunakan half precision
+        torch_dtype=torch.float16,  
         device_map="auto",
         low_cpu_mem_usage=True,
-        offload_folder="offload"  # Untuk model besar
+        offload_folder="offload"  
     ).to(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
     
-    # Optimasi model untuk inferensi
-    model.eval()  # Set ke mode evaluasi
+
+    model.eval()  
     if torch.cuda.is_available():
         model = model.cuda()
         torch.backends.cudnn.benchmark = True 
