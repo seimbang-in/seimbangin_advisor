@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
 class User(BaseModel):
-  income: float
+  monthly_income: float
   outcome: float
-  saving_ratio: float
+  current_savings: float
+  debt:float
   financial_goals: str
+  risk_management: str

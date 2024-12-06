@@ -1,5 +1,5 @@
-from cashflow import analyze_cashflow
-from model import load_model_advisor
+from utils.cashflow import analyze_cashflow
+from utils.model import load_model_advisor
 from transformers import pipeline
 
 def get_recommendations(user_data, market_conditions):
@@ -69,8 +69,11 @@ def get_recommendations(user_data, market_conditions):
 
 def get_financial_advice(context):
   prompt = f"### Context:\n{context}\n\n### Response:\n"
-  model,tokenizer = load_model_advisor()
+  model, tokenizer = load_model_advisor()
   generator = pipeline('text-generation', model=model, tokenizer=tokenizer)
-  generated_text = generator(prompt, max_length=512, num_return_sequences=1)
+  
+  # Adjust parameters for better results
+  generated_text = generator(prompt, max_length=512, num_return_sequences=1, temperature=0.7, top_p=0.9)
+  
   response = generated_text[0]['generated_text'].split("### Response:\n")[1].strip()
   return response

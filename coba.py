@@ -1,8 +1,11 @@
-import torch
+import pandas as pd
+import tensorflow as tf
+import json
 
-print("Number of GPU: ", torch.cuda.device_count())
-print("GPU Name: ", torch.cuda.get_device_name())
+with open('./utils/tokenizer.json','r') as f:
+  tokenizer_json = json.load(f)
+tokenizer_str = json.dumps(tokenizer_json)
+tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(tokenizer_str)
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print('Using device:', device)
+print(tokenizer)
