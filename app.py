@@ -8,7 +8,7 @@ from utils.generate import get_financial_advice
 from utils.model import load_model_forecasting,load_model_text_classification,vectorize_text,predict_category
 from utils.market import predict_market,define_market_condition
 from models.User import User
-from models.Text import Text,PredictionResponse
+from models.Text import Item,ItemsRequest,ItemResponse
 import json
 
 app = FastAPI(
@@ -54,7 +54,7 @@ async def get_market_conditions(month: int):
     return conditions
 
 @app.post("/text/classify")
-async def classify_text(request:Text,response_model=PredictionResponse):
+async def classify_text(request: ItemsRequest):
     MAX_LEN = 10
     model = tf.keras.models.load_model('./utils/klasifikasi.h5')
     with open('./utils/tokenizer.json','r') as f:
@@ -68,12 +68,28 @@ async def classify_text(request:Text,response_model=PredictionResponse):
  4 : 'utility',
  5 : 'education',
  6 : 'shopping'}
-    sequence = tokenizer.texts_to_sequences([request.text])
-    padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(sequence,maxlen=MAX_LEN,padding='post')
-    prediction = model.predict(padded_sequence)
-    predict_category_id = np.argmax(prediction)
-    category_mapping = category.get(predict_category_id,'Unknown')
-    return PredictionResponse(text=request.text,predicted_category=category_mapping,confidence=float(np.max(prediction)))
+    
+    # List untuk menyimpan hasil
+    updated_items = []
+
+    for item in request.items:
+        sequence = tokenizer.texts_to_sequences([item.item_name])
+        padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(sequence, maxlen=MAX_LEN, padding='post')
+        prediction = model.predict(padded_sequence)
+        predict_category_id = np.argmax(prediction)
+        predicted_category = category.get(predict_category_id, 'Unknown')
+        
+        updated_item = Item(
+            id=item.id,
+            item_name=item.item_name,
+            category=predicted_category, 
+            price=item.price,
+            quantity=item.quantity,
+            subtotal=item.subtotal
+        )
+        updated_items.append(updated_item)
+    
+    return {"items": updated_items}
 
 if __name__ == '__main__':
     uvicorn.run(app,host='0.0.0.0',port=8000)

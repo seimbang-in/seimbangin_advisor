@@ -1,9 +1,15 @@
 from pydantic import BaseModel
 
-class Text(BaseModel):
-  text:str
+class Item(BaseModel):
+    id: int
+    item_name: str
+    category: str
+    price: float
+    quantity: int
+    subtotal: float
 
-class PredictionResponse(BaseModel):
-  text: str
-  predicted_category: str
-  confidence: float
+class ItemsRequest(BaseModel):
+    items: list[Item]
+
+class ItemResponse(Item):
+    category: str  # Mengubah category sesuai prediksi
